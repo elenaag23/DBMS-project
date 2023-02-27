@@ -1,0 +1,1190 @@
+CREATE TABLE JOB
+(
+ID_JOB        NUMBER(9)        PRIMARY KEY,
+NUME_JOB      VARCHAR2(20)     NOT NULL,
+SALARIU       NUMBER(9)        NOT NULL
+);
+
+CREATE TABLE HOTEL 
+(
+ID_HOTEL           NUMBER(9)         PRIMARY KEY,
+NUME               VARCHAR2(20)      NOT NULL,
+ADRESA             VARCHAR2(30)      NOT NULL,
+ORAS               VARCHAR2(20)      NOT NULL,
+TELEFON            CHAR(10)          NOT NULL
+);
+
+CREATE TABLE ANGAJAT
+(
+ID_ANGAJAT        NUMBER(9)        PRIMARY KEY,
+ID_JOB            NUMBER(9)        NOT NULL REFERENCES JOB(ID_JOB),
+ID_HOTEL          NUMBER(9)        NOT NULL REFERENCES HOTEL(ID_HOTEL),
+ID_MANAGER        NUMBER(9)        REFERENCES ANGAJAT(ID_ANGAJAT),
+NUME              VARCHAR2(30)     NOT NULL,
+PRENUME           VARCHAR2(30)     NOT NULL,
+DATA_NASTERII     DATE             NOT NULL,
+DATA_ANGAJARII    DATE             NOT NULL,
+TELEFON           CHAR(10)         NOT NULL
+);
+
+
+CREATE TABLE SERVICII_EXTRA
+(
+ID_SERV        NUMBER(9)       PRIMARY KEY,
+TIP_SERVICIU   VARCHAR2(30)    NOT NULL,
+PRET           NUMBER(9)       NOT NULL
+);
+
+
+CREATE TABLE DISPUNE
+(
+ID_HOTEL        NUMBER(9)       NOT NULL REFERENCES HOTEL(ID_HOTEL),
+ID_SERV         NUMBER(9)       NOT NULL REFERENCES SERVICII_EXTRA(ID_SERV),
+CONSTRAINT PK_DISPUNE PRIMARY KEY(ID_HOTEL, ID_SERV)
+);
+
+
+CREATE TABLE CAMERA 
+(
+ID_CAMERA         NUMBER(9)       PRIMARY KEY,
+ID_HOTEL          NUMBER(9)       NOT NULL REFERENCES HOTEL(ID_HOTEL),
+NUMAR_CAMERA      NUMBER(9)       NOT NULL,
+TIP_CAMERA        VARCHAR2(10)    NOT NULL,
+DISPONIBILITATE   CHAR(2)         CHECK (DISPONIBILITATE='DA' OR DISPONIBILITATE='NU') NOT NULL,
+PRET_NOAPTE       NUMBER(9)       NOT NULL
+);
+
+
+CREATE TABLE APARTAMENT 
+(
+ID_APARTAMENT       NUMBER(9)       PRIMARY KEY,
+ID_HOTEL            NUMBER(9)       NOT NULL REFERENCES HOTEL(ID_HOTEL),
+NUMAR_APARTAMENT    NUMBER(9)       NOT NULL,
+NUMAR_CAMERE        NUMBER          CHECK(NUMAR_CAMERE>1 AND NUMAR_CAMERE<5) NOT NULL,
+DISPONIBILITATE     CHAR(2)         CHECK (DISPONIBILITATE='DA' OR DISPONIBILITATE='NU') NOT NULL,
+PRET_NOAPTE         NUMBER(9)       NOT NULL
+);
+
+
+CREATE TABLE CLIENT 
+(
+ID_CLIENT         NUMBER(9)         PRIMARY KEY,
+NUME              VARCHAR2(30)      NOT NULL,
+PRENUME           VARCHAR2(30)      NOT NULL,
+DATA_NASTERII     DATE              NOT NULL,
+TELEFON           CHAR(10)          NOT NULL,
+ADRESA            VARCHAR2(30)      NOT NULL,
+ORAS              VARCHAR2(20)      NOT NULL
+);
+
+
+CREATE TABLE TIP_SEJUR
+(
+ID_SEJUR          NUMBER(9)        PRIMARY KEY,
+TIP_SEJUR         VARCHAR2(20)     NOT NULL,
+PRET              NUMBER(9)        NOT NULL
+);
+
+
+CREATE TABLE PLATA
+(
+ID_PLATA          NUMBER(9)        PRIMARY KEY,
+VALOARE_PLATA     NUMBER(9)        NOT NULL
+);
+
+
+CREATE TABLE FACTURA
+(
+ID_FACTURA        NUMBER(9)         PRIMARY KEY,
+DATA_EMITERE      DATE              NOT NULL,
+ID_PLATA          NUMBER(9)         NOT NULL REFERENCES PLATA(ID_PLATA) 
+);
+
+
+CREATE TABLE REZERVARE
+(
+ID_REZERVARE   NUMBER(9)      PRIMARY KEY,
+ID_CLIENT      NUMBER(9)      NOT NULL REFERENCES CLIENT(ID_CLIENT),
+ID_SEJUR       NUMBER(9)      NOT NULL REFERENCES TIP_SEJUR(ID_SEJUR),
+ID_CAMERA      NUMBER(9)      REFERENCES CAMERA(ID_CAMERA),
+ID_APARTAMENT  NUMBER(9)      REFERENCES APARTAMENT(ID_APARTAMENT),
+ID_FACTURA     NUMBER(9)      NOT NULL REFERENCES FACTURA(ID_FACTURA),
+DATA_REZERVARE DATE           NOT NULL,
+CHECK_IN       DATE           NOT NULL,
+CHECK_OUT      DATE           NOT NULL
+);
+
+
+CREATE TABLE CUPRINDE
+(
+ID_REZERVARE   NUMBER(9)       NOT NULL REFERENCES REZERVARE(ID_REZERVARE),
+ID_SERV        NUMBER(9)       NOT NULL REFERENCES SERVICII_EXTRA(ID_SERV),
+CONSTRAINT PK_CUPRINDE PRIMARY KEY(ID_REZERVARE, ID_SERV)
+);
+
+--INSERARI
+
+--JOB.
+
+INSERT INTO JOB VALUES
+(11,'Paznic',2000);
+
+INSERT INTO JOB VALUES
+(16,'Ospatar',1800);
+
+INSERT INTO JOB VALUES
+(12,'Bucatar',3300);
+
+INSERT INTO JOB VALUES
+(13,'Ospatar',1800);
+
+INSERT INTO JOB VALUES
+(14,'Receptionist',2300);
+
+INSERT INTO JOB VALUES
+(15,'Personal curatenie',1300);
+
+INSERT INTO JOB VALUES
+(16,'Manager',4000);
+
+
+--HOTEL.
+
+insert into hotel values
+(1,'Glimpse','Strada Crinului, 15', 'Constanta', '0725415471');
+
+insert into hotel values
+(2,'Glimpse','Strada Raului nr.279-T, 25,', 'Sighisoara','0725415472');
+
+insert into hotel values
+(3,'Glimpse','Strada Diminetii,21', 'Brasov', '0725415473');
+
+insert into hotel values
+(4,'Glimpse','Strada Mihai Viteazul nr.2,13', 'Timisoara', '0725415474');
+
+insert into hotel values
+(5,'Glimpse','Strada Consecventei nr.1-T,8', 'Bucuresti', '0725415475');
+
+
+--ANGAJAT.
+
+
+insert into angajat values
+(101,16,1,NULL,'Vasilica','Iacob','26-SEP-1984','18-JUL-2018','0771760402');
+
+insert into angajat values
+(102,16,2,NULL,'Nicu','Elena','22-JUN-1977','21-JUL-2016','0700760402');
+
+insert into angajat values
+(103,16,3,NULL,'Olga','Nicoleta','08-JUN-1981','16-JAN-2013','0708760402');
+
+insert into angajat values
+(104,16,4,NULL,'Fane','Horia','01-MAY-1985','27-JUL-2015','0731760402');
+
+insert into angajat values
+(105,16,5,NULL,'Tiberiu','Emil','03-OCT-1975','27-FEB-2014','0751760402');
+
+
+insert into angajat values
+(106,11,1,101,'Fabian','Tudor','18-APR-1972','02-NOV-2016','0711760402');
+
+insert into angajat values
+(107,11,2,102,'Dacian','Diana','04-MAY-1983','03-JUN-2014','0761760402');
+
+insert into angajat values
+(108,11,3,103,'Stan','Ciprian','15-MAR-1978','31-JUL-2013','0781760402');
+
+insert into angajat values
+(109,12,5,105,'Ruxandra','Andrei','08-MAR-1978','03-OCT-2013','0701760402');
+
+insert into angajat values
+(110,11,4,104,'Nicu','Elena','22-JUN-1977','21-JUL-2016','0700760402');
+
+
+
+insert into angajat values
+(111,12,1,101,'Lazar','Violeta','17-MAR-1982','07-JUL-2015','0702760402');
+
+insert into angajat values
+(112,12,2,102,'Alexandrina','Margareta','08-MAR-1984','27-NOV-2013','0704760402');
+
+insert into angajat values
+(113,12,3,103,'Romeo','Adam','29-NOV-1972','21-APR-2016','0705760402');
+
+insert into angajat values
+(114,12,4,104,'Miron','Cezar','09-MAY-1979','16-APR-2019','0706760402');
+
+insert into angajat values
+(115,12,5,105,'Matei','Laurentiu','05-APR-1974','08-MAY-2014','0707760402');
+
+
+insert into angajat values
+(116,13,1,101,'Rodica','Dragos','11-DEC-1979','03-MAR-2014','0701660402');
+
+insert into angajat values
+(117,13,2,102,'Victoria','Tatiana','22-DEC-1977','20-JUN-2014','0701860402');
+
+insert into angajat values
+(118,13,3,103,'Mihai','Augustin','08-APR-1985','29-SEP-2016','0701960402');
+
+insert into angajat values
+(119,13,4,104,'Estera','Danut','01-AUG-1972','28-JUL-2014','0701200402');
+
+insert into angajat values
+(120,13,5,105,'Atanasie','Narcisa','17-JUN-1977','31-JUL-2018','0701201402');
+
+
+insert into angajat values
+(121,14,1,101,'Adam','Radu','19-JUL-1979','17-MAR-2015','0701711402');
+
+insert into angajat values
+(122,14,2,102,'Petre','Marius','16-JUN-1981','02-APR-2014','0701811402');
+
+insert into angajat values
+(123,14,3,103,'Petrut','David','11-JUL-1985','17-DEC-2014','0701911402');
+
+insert into angajat values
+(124,14,4,104,'Carol','Lorena','24-AUG-1970','10-APR-2018','0701205402');
+
+insert into angajat values
+(125,14,5,105,'Stan','Andrei','17-MAR-1982','29-SEP-2015','0701206402');
+
+
+insert into angajat values
+(126,15,1,101'Floriana','Antonia','24-DEC-1982','03-MAY-2016','0701209402');
+
+insert into angajat values
+(127,15,2,102,'Costin','Isabela','21-JUN-1979','10-AUG-2018','0701230402');
+
+insert into angajat values
+(128,15,3,103,'Valentin','Mihaela','07-APR-1983','17-OCT-2016','0701231402');
+
+insert into angajat values
+(129,15,4,104,'Marin','Albert','29-NOV-1977','10-JAN-2018','0701232402');
+
+insert into angajat values
+(130,15,5,105,'Octavian','Sorina','27-OCT-1970','07-FEB-2019','0701233402');
+
+--SERVICII_EXTRA.
+
+
+insert into servicii_extra values
+(1100,'Sala de sport', 50);
+
+insert into servicii_extra values
+(1101,'Piscina', 100);
+
+insert into servicii_extra values
+(1102,'Sauna', 100);
+
+insert into servicii_extra values
+(1103,'Jacuzzi', 100);
+
+insert into servicii_extra values
+(1104,'Excursie', 150);
+
+insert into servicii_extra values
+(1105,'Sala de jocuri', 120);
+
+--DISPUNE.
+
+insert into dispune values
+(1,1100);
+
+insert into dispune values
+(2,1100);
+
+insert into dispune values
+(3,1100);
+
+insert into dispune values
+(4,1100);
+
+insert into dispune values
+(5,1100);
+
+
+insert into dispune values
+(1,1101);
+
+insert into dispune values
+(2,1101);
+
+insert into dispune values
+(3,1101);
+
+insert into dispune values
+(4,1101);
+
+insert into dispune values
+(5,1101);
+
+
+insert into dispune values
+(1,1102);
+
+insert into dispune values
+(2,1102);
+
+insert into dispune values
+(3,1103);
+
+insert into dispune values
+(4,1103);
+
+insert into dispune values
+(1,1104);
+
+insert into dispune values
+(2,1104);
+
+insert into dispune values
+(3,1104);
+
+
+--CAMERA.
+
+insert into camera values
+(110,1,10,'Single','DA',120);
+
+insert into camera values
+(111,2,11'Single','DA',120);
+
+insert into camera values
+(112,3,12'Single','NU',120);
+
+insert into camera values
+(113,4,13,'Single','NU',120);
+
+insert into camera values
+(114,5,14,'Single','NU',120);
+
+
+insert into camera values
+(115,1,15,'DOUBLE','NU',175);
+
+insert into camera values
+(116,2,16,'DOUBLE','NU',175);
+
+insert into camera values
+(117,3,17,'DOUBLE','NU',175);
+
+insert into camera values
+(118,4,18,'DOUBLE','NU',175);
+
+insert into camera values
+(119,5,19,'DOUBLE','DA',175);
+
+
+insert into camera values
+(120,1,20,'TRIPLE','DA',230);
+
+insert into camera values
+(121,2,21,'TRIPLE','NU',230);
+
+insert into camera values
+(122,3,22,'TRIPLE','NU',230);
+
+insert into camera values
+(123,4,23,'TRIPLE','NU',230);
+
+insert into camera values
+(124,5,24,'TRIPLE','NU',230);
+
+
+--APARTAMENT.
+
+insert into apartament values
+(150,1,50,2,'NU',250);
+
+insert into apartament values
+(151,2,51,2,'NU',250);
+
+insert into apartament values
+(152,3,52,2,'DA',250);
+
+insert into apartament values
+(153,4,53,2,'DA',250);
+
+insert into apartament values
+(154,5,54,2,'DA',250);
+
+
+insert into apartament values
+(155,1,55,3,'NU',340);
+
+insert into apartament values
+(156,2,56,3,'NU',340);
+
+insert into apartament values
+(157,3,57,3,'DA',340);
+
+insert into apartament values
+(158,4,58,3,'DA',340);
+
+insert into apartament values
+(159,5,59,3,'NU',340);
+
+
+insert into apartament values
+(160,1,60,4,'DA',480);
+
+insert into apartament values
+(161,2,61,4,'NU',480);
+
+insert into apartament values
+(162,3,62,4,'NU',480);
+
+insert into apartament values
+(163,4,63,4,'DA',480);
+
+insert into apartament values
+(164,5,64,4,'NU',480);
+
+insert into apartament values
+(165,2,65,3,'NU',340);
+
+
+--CLIENT.
+
+insert into client values
+(650,'Nelu','Paul','17-MAY-1978','0712873082','Strada Brazdei nr.21-31','Cluj-Napoca');
+
+insert into client values
+(651,'Nicolae','Cosmina','30-AUG-1979','0732873082','Strada Dorobanti,22','Fagaras');
+
+insert into client values
+(652,'Costache','Raluca','28-FEB-1985','0742873082','Strada Valea Calugareasca nr.3','Tulcea');
+
+insert into client values
+(653,'Anisoara','Lidia','09-FEB-1982','0752873082','Strada Balcescu Nicolae nr.6','Oradea');
+
+insert into client values
+(654,'Chitoiu','Marius','20-MAY-1990','0703873582','Strada Cirezarilor,12','Braila');
+
+insert into client values
+(655,'Sandu','Victor','06-APR-1971','0772873082','Strada Grigorescu Eremia,15','Deva');
+
+insert into client values
+(656,'Nicu','Simion','20-JAN-1976','0782873082','Strada Fluturilor,25','Piatra Neamt');
+
+insert into client values
+(657,'Catina','Iulia','08-JUN-1972','0792873082','Strada Vacantei nr.30-T,7','Hunedoara');
+
+insert into client values
+(658,'Nicusor','Georgeta','21-AUG-1985','0701873082','Strada Spicului nr.33-T','Buzau');
+
+insert into client values
+(659,'Horatiu','Sorina','27-MAY-1985','0703873082','Strada Goraslau,16','Alba Iulia');
+
+insert into client values
+(670,'Popescu','Radu','07-FEB-1982','0783873082','Strada Nicoara Moise','Ramnicu Valcea');
+
+
+--TIP-SEJUR.
+
+insert into tip_sejur values
+(190,'Mic dejun',100);
+
+insert into tip_sejur values
+(191,'Room only',0);
+
+insert into tip_sejur values
+(192,'Demipensiune',150);
+
+insert into tip_sejur values
+(193,'Pensiune completa',280);
+
+insert into tip_sejur values
+(194,'All-Inclusive',310);
+
+
+--PLATA.
+
+insert into plata values
+(110650,510);
+
+insert into plata values
+(110651,2220);
+
+insert into plata values
+(110652,500);
+
+insert into plata values
+(110653,1760);
+
+insert into plata values
+(110654,1200);
+
+insert into plata values
+(110655,1150);
+
+insert into plata values
+(110656,1720);
+
+insert into plata values
+(110657,1500);
+
+insert into plata values
+(110658,2120);
+
+insert into plata values
+(110659,1330);
+
+insert into plata values
+(110670,1360);
+
+
+--FACTURA.
+
+insert into factura values
+(1010650,'12-APR-2021',110650);
+
+insert into factura values
+(1010651,'10-MAY-2021',110651);
+
+insert into factura values
+(1010652,'30-APR-2021',110652);
+
+insert into factura values
+(1010653,'03-JUN-2021',110653);
+
+insert into factura values
+(1010654,'18-AUG-2021',110654);
+
+insert into factura values
+(1010655,'15-SEP-2021',110655);
+
+insert into factura values
+(1010656,'12-MAR-2021',110656);
+
+insert into factura values
+(1010657,'13-MAR-2021',110657);
+
+insert into factura values
+(1010658,'27-SEP-2021',110658);
+
+insert into factura values
+(1010659,'01-JUN-2021',110659);
+
+insert into factura values
+(1010670,'15-JUN-2021',110659);
+
+
+--REZERVARE.
+
+
+insert into rezervare values
+(10651,651,192,NULL,163,1010651,'10-MAY-2021','04-JUL-2021','08-JUL-2021');
+
+insert into rezervare values
+(10652,652,191,115,NULL,1010652,'30-APR-2021','11-JUN-2021','13-JUN-2021');
+
+insert into rezervare values
+(10653,653,191,110,NULL,1010653,'25-APR-2021','11-JUN-2021','13-JUN-2021');
+
+insert into rezervare values
+(10654,654,193,120,NULL,1010654,'02-APR-2021','15-JUL-2021','19-JUL-2021');
+
+insert into rezervare values
+(10655,655,193,116,NULL,1010655,'23-JUN-2021','15-SEP-2021','21-SEP-2021');
+
+insert into rezervare values
+(10656,656,194,NULL,157,1010656,'12-MAR-2021','20-MAY-2021','24-MAY-2021');
+
+insert into rezervare values
+(10657,657,192,115,NULL,1010657,'13-MAR-2021','19-JUN-2021','25-JUN-2021');
+
+insert into rezervare values
+(10658,658,190,NULL,160,1010658,'25-AUG-2021','27-SEP-2021','01-OCT-2021');
+
+insert into rezervare values
+(10659,659,193,NULL,159,1010659,'06-MAY-2021','01-JUN-2021','05-JUN-2021');
+
+insert into rezervare values
+(10670,670,190,NULL,165,1010670,'15-JUN-2021','20-SEP-2021','24-SEP-2021');
+
+
+
+--CUPRINDE.
+
+insert into cuprinde values
+(10651,1103);
+
+insert into cuprinde values
+(10652,1103);
+
+insert into cuprinde values
+(10655,1101);
+
+insert into cuprinde values
+(10655,1100);
+
+insert into cuprinde values
+(10656,1100);
+
+insert into cuprinde values
+(10657,1101);
+
+insert into cuprinde values
+(10657,1102);
+
+insert into cuprinde values
+(10658,1104);
+
+insert into cuprinde values
+(10659,1100);
+
+insert into cuprinde values
+(10659,1103);
+
+
+--6.
+-- Afisati toate serviciile de care dispune un hotel dintr-un oras dat ca parametru.
+
+create or replace procedure servicii_hotel
+    (oras_hotel hotel.oras%TYPE) as
+    TYPE servicii IS TABLE OF SERVICII_EXTRA%ROWTYPE INDEX BY PLS_INTEGER;
+    t  servicii;
+    TYPE tablou_imbricat IS TABLE OF SERVICII_EXTRA.ID_SERV%TYPE;
+    v_serv    tablou_imbricat:= tablou_imbricat();
+    serviciu SERVICII_EXTRA%ROWTYPE;
+    cod_oras hotel.id_hotel%TYPE;
+    i number:=0;
+    j number:=0;
+    
+begin
+
+    select id_hotel into cod_oras
+    from hotel
+    where upper(oras_hotel)=upper(oras);
+    
+    select id_serv bulk collect into v_serv 
+    from dispune
+    where cod_oras=id_hotel;
+
+   
+    for j in v_serv.first..v_serv.last loop
+        select id_serv, tip_serviciu, pret into serviciu
+        from servicii_extra
+        where id_serv = v_serv(j);
+        t(i):=serviciu;
+        i := i+1;
+    end loop;
+
+    dbms_output.put_line('Hotelul "Glimpse" din orasul ' || oras_hotel || ' dispune de urmatoarele servicii: ');
+    
+
+    for i in t.first..t.last loop
+        dbms_output.put_line(t(i).tip_serviciu);
+    end loop;
+
+end servicii_hotel;
+
+execute servicii_hotel('Constanta');
+
+drop procedure servicii_hotel;
+
+
+--7.
+
+-- Afisati toti angajatii subordonati unui manager al carui nume si prenume este dat de la tastatura. Dintre acestia, afisati job-ul celui mai vechi angajat.
+
+create or replace procedure angajati
+    (nume_manager angajat.nume%TYPE,
+     prenume_manager angajat.prenume%TYPE) as
+     
+     cod_manager angajat.id_angajat%type;
+     nume_angajat angajat.nume%TYPE;
+     prenume_angajat angajat.prenume%TYPE;
+     job_nume job.nume_job%TYPE;
+     salariu_ang job.salariu%TYPE;
+     angajare angajat.data_angajarii%TYPE;
+     nr number(4);
+     
+     cursor c_lista_sub (cod_man angajat.id_angajat%type) is
+     select nume, prenume
+     from angajat
+     where id_manager=cod_man;
+     
+     cursor c_job is
+     select j.nume_job
+     from job j, angajat a
+     where a.data_angajarii=angajare and a.id_job=j.id_job;
+     
+begin
+    
+    select id_angajat into cod_manager
+    from angajat
+    where upper(nume)=upper(nume_manager) and upper(prenume)=upper(prenume_manager);
+    
+    dbms_output.put_line('cod ' || cod_manager);
+    
+
+    select min(data_angajarii) into angajare
+    from angajat
+    where id_manager=cod_manager;
+    
+    dbms_output.put_line('Lista angajatilor subordonati lui ' || nume_manager || ' ' || prenume_manager || ' sunt:');
+    
+    open c_lista_sub(cod_manager);
+    loop
+        --dbms_output.put_line(cod_manager);
+        fetch c_lista_sub into nume_angajat, prenume_angajat;
+        exit when c_lista_sub%NOTFOUND;
+        dbms_output.put_line(nume_angajat || ' ' || prenume_angajat);
+    end loop;
+    close c_lista_sub;
+        
+    open c_job;
+    loop
+        fetch c_job into job_nume;
+        exit when c_job%NOTFOUND;
+    end loop;
+    close c_job;
+    
+    
+    dbms_output.put_line('Angajatul cu cea mai mare vechime are ca job ' || job_nume);
+
+end angajati;
+/
+
+execute angajati('Tiberiu', 'Emil');
+
+
+--8.
+--Afisati care este tipul camerei rezervate de catre un client al carui nume incepe cu litera 'C', rezervarea fiind facuta intr-o luna data ca parametru dintr-un hotel dat ca parametru.
+
+create or replace function tip_camera (oras_h hotel.oras%TYPE, 
+                                        luna number)
+return varchar2 is camera1 camera.tip_camera%type;
+                    nume client.nume%TYPE;
+    
+        cod_h hotel.id_hotel%TYPE;
+        luna_invalida exception;
+    
+begin
+
+    if luna<1 or luna> 12 then
+        raise luna_invalida;
+    end if;
+
+    select id_hotel into cod_h
+    from hotel
+    where upper(oras_h)=upper(oras);
+
+    select c.tip_camera into camera1
+    from camera c 
+    join rezervare r on c.id_camera=r.id_camera
+    join client cc on cc.id_client=r.id_client
+    where extract (MONTH from r.data_rezervare)=luna and cc.nume like ('C%');
+    
+    dbms_output.put_line('Camera rezervata in luna ' || luna || ' la hotelul din ' || oras_h || ' este de tip: ');
+    return camera1;
+    
+    EXCEPTION
+    WHEN luna_invalida THEN
+        RAISE_APPLICATION_ERROR(-20999,'Luna introdusa este invalida!');
+    WHEN NO_DATA_FOUND THEN 
+        RAISE_APPLICATION_ERROR(-20999, 'In istoricul de rezervari nu exista nicio camera rezervata la hotelul din ' || oras_h || ' in luna ' || luna);
+    WHEN TOO_MANY_ROWS THEN 
+        RAISE_APPLICATION_ERROR(-20999,'Mai multe camere au fost rezervate la hotelul din ' || oras_h || ' in luna ' || luna);
+    
+end tip_camera;
+/
+
+--eroare: luna invalida
+
+begin 
+    dbms_output.put_line(tip_camera('Constanta',14));
+end;
+/
+
+--eroare: TOO MANY ROWS
+
+begin 
+    dbms_output.put_line(tip_camera('Constanta',4));
+end;
+/
+
+--eroare: NO DATA FOUND
+
+begin 
+    dbms_output.put_line(tip_camera('Constanta',12));
+end;
+/
+
+--output corect
+
+begin 
+    dbms_output.put_line(tip_camera('Constanta',3));
+end;
+/
+
+
+--9.
+--Afisati valoarea de plata a clientului care a rezervat un apartament cu 3 camere in hotelul al carui id este furnizat, a carui valoare a tipului de sejur trebuie sa fie mai mare decat o valoare
+--data iar check-in-ul trebuie sa se fi facut intr-o zi data ca parametru.
+
+create or replace procedure val_plata (cod_h hotel.id_hotel%TYPE,
+                                       zi number,
+                                       pret_s tip_sejur.pret%TYPE) as
+                                       
+        rezultat plata.valoare_plata%TYPE;
+        zi_invalida exception;
+begin
+
+    if zi<1 or zi>31 then
+        raise zi_invalida;
+    end if;
+    
+    select p.valoare_plata into rezultat
+    from plata p
+    join factura f on p.id_plata = f.id_plata
+    join rezervare r on r.id_factura=f.id_factura
+    join apartament a on a.id_apartament=r.id_apartament 
+    join tip_sejur t on r.id_sejur=t.id_sejur
+    where a.id_hotel=cod_h and a.numar_camere=3 and EXTRACT (DAY from r.check_in)=zi and t.pret>pret_s;
+            
+    dbms_output.put_line('Valoarea de plata cautata este ' || rezultat);
+    
+    exception
+    when zi_invalida then
+        RAISE_APPLICATION_ERROR(-20009, 'Ziua transmisa ca parametru este invalida!');
+    when NO_DATA_FOUND then
+            RAISE_APPLICATION_ERROR(-20009, 'Nu exista nicio rezervare cu aceste date!');
+    when TOO_MANY_ROWS then
+            RAISE_APPLICATION_ERROR(-20009, 'Exista mai multe rezervari cu aceste date!');
+    when others then
+            RAISE_APPLICATION_ERROR(-20009, 'Am intampinat o eroare');
+          
+end val_plata;
+/
+
+--OUTPUT CORECT
+execute val_plata(5,1,50);
+
+--eroare: NO_DATA_FOUND
+execute val_plata(7,25,50);
+
+--eroare: zi invalida
+execute val_plata(3,36,50);
+
+--eroare: TOO_MANY_ROWS
+execute val_plata(3,20,50);
+
+--10.
+-- Creati un trigger de tip LMD la nivel de comanda care sa nu permita existenta unui numar mai mare de 10 servicii extra.
+create or replace trigger trigex10 before insert on servicii_extra
+
+declare
+    nr_serv number;
+
+begin
+    select count(id_serv) into nr_serv
+    from servicii_extra;
+        
+    if nr_serv>10 then
+        raise_application_error(-20009, 'Nu mai putem adauga alte servicii extra');
+    end if;
+    
+end;
+
+--declansare trigger
+begin 
+    for i in 1..11 loop
+        insert into servicii_extra values(100+i, 'Serviciul ' || i, 100);
+    end loop;
+end;
+
+insert into servicii_extra values(150, 'ok', 50);
+
+
+
+drop trigger trigex10;
+
+
+--11.
+--Creati un trigger de tip LMD la nivel de linie astfel incat pretul tipurilor de sejur sa nu poata fi crescute cu mai mult de 50 de lei.
+
+create or replace trigger trigex11 before update of pret on tip_sejur for each row
+
+begin
+    if(:NEW.pret > :OLD.pret + 50) then
+        raise_application_error(-20009, 'Pretul tipurilor de masa nu pot fi crescute cu mai mult de 50 de lei');
+    end if;
+end;
+/
+--declansare trigger
+update tip_sejur 
+set pret = pret + 60;
+
+drop trigger trigex11;
+
+
+--12.
+-- Creati un trigger de tip LDD care dupa fiecare modificare a schemei salveaza modificarile in tabelul "actiuni".
+-- Modificarile la nivel LDD pot fi facute doar de userul admin ('C##USEREXEMPLU2').
+
+create table actiuni (
+    utilizator VARCHAR2(30),
+    nume_bd    VARCHAR2(50),
+    eveniment VARCHAR2(20),
+    nume_obiect VARCHAR2(30),
+    data DATE);
+    
+create or replace trigger trigex12 after create or drop or alter on schema
+begin
+    if USER!='C##USEREXEMPLU2' then
+        raise_application_error(-20009, 'Nu aveti voie sa faceti modificari asupra bazei de date!');
+    end if;
+    insert into actiuni values
+    (SYS.LOGIN_USER, SYS.DATABASE_NAME, SYS.SYSEVENT, SYS.DICTIONARY_OBJ_NAME, SYSDATE);
+end;
+
+--declansare trigger
+
+create table testare_trig
+( column1 number,
+  column2 varchar2(20),
+  column3 date);
+  
+alter table testare_trig
+modify column3 number;
+
+select * from actiuni;
+
+drop trigger trigex12;
+
+drop table actiuni;
+
+drop table testare_trig;
+
+
+
+--13.
+
+create or replace package ex13_ege as
+
+--6.
+    procedure servicii_hotel
+    (oras_hotel hotel.oras%TYPE);
+    
+--7.
+    procedure angajati
+    (nume_manager angajat.nume%TYPE,
+     prenume_manager angajat.prenume%TYPE);
+     
+--8.
+    function tip_camera (oras_h hotel.oras%TYPE, 
+                         luna number)
+                                        
+    return varchar2;
+    
+--9.
+
+    procedure val_plata (cod_h hotel.id_hotel%TYPE,
+                         zi number,
+                         pret_s tip_sejur.pret%TYPE);
+    
+end ex13_ege;
+/
+
+create or replace package body ex13_ege as
+--6.
+
+     procedure servicii_hotel
+        (oras_hotel hotel.oras%TYPE) is
+        TYPE servicii IS TABLE OF SERVICII_EXTRA%ROWTYPE INDEX BY PLS_INTEGER;
+        t  servicii;
+        TYPE tablou_imbricat IS TABLE OF SERVICII_EXTRA.ID_SERV%TYPE;
+        v_serv    tablou_imbricat:= tablou_imbricat();
+        serviciu SERVICII_EXTRA%ROWTYPE;
+        cod_oras hotel.id_hotel%TYPE;
+        i number:=0;
+        j number:=0;
+        
+    begin
+    
+        select id_hotel into cod_oras
+        from hotel
+        where upper(oras_hotel)=upper(oras);
+        
+        select id_serv bulk collect into v_serv 
+        from dispune
+        where cod_oras=id_hotel;
+    
+       
+        for j in v_serv.first..v_serv.last loop
+            select id_serv, tip_serviciu, pret into serviciu
+            from servicii_extra
+            where id_serv = v_serv(j);
+            t(i):=serviciu;
+            i := i+1;
+        end loop;
+    
+        dbms_output.put_line('Hotelul "Glimpse" din orasul ' || oras_hotel || ' dispune de urmatoarele servicii: ');
+        
+    
+        for i in t.first..t.last loop
+            dbms_output.put_line(t(i).tip_serviciu);
+        end loop;
+    
+    end servicii_hotel;
+
+
+--7.
+
+        procedure angajati
+        (nume_manager angajat.nume%TYPE,
+         prenume_manager angajat.prenume%TYPE) as
+         
+         cod_manager angajat.id_angajat%type;
+         nume_angajat angajat.nume%TYPE;
+         prenume_angajat angajat.prenume%TYPE;
+         job_nume job.nume_job%TYPE;
+         salariu_ang job.salariu%TYPE;
+         angajare angajat.data_angajarii%TYPE;
+         nr number(4);
+         
+         cursor c_lista_sub (cod_man angajat.id_angajat%type) is
+         select nume, prenume
+         from angajat
+         where id_manager=cod_man;
+         
+         cursor c_job is
+         select j.nume_job
+         from job j, angajat a
+         where a.data_angajarii=angajare and a.id_job=j.id_job;
+         
+    begin
+        
+        select id_angajat into cod_manager
+        from angajat
+        where upper(nume)=upper(nume_manager) and upper(prenume)=upper(prenume_manager);
+        
+        dbms_output.put_line('cod ' || cod_manager);
+        
+    
+        select min(data_angajarii) into angajare
+        from angajat
+        where id_manager=cod_manager;
+        
+        dbms_output.put_line('Lista angajatilor subordonati lui ' || nume_manager || ' ' || prenume_manager || ' sunt:');
+        
+        open c_lista_sub(cod_manager);
+        loop
+            --dbms_output.put_line(cod_manager);
+            fetch c_lista_sub into nume_angajat, prenume_angajat;
+            exit when c_lista_sub%NOTFOUND;
+            dbms_output.put_line(nume_angajat || ' ' || prenume_angajat);
+        end loop;
+        close c_lista_sub;
+            
+        open c_job;
+        loop
+            fetch c_job into job_nume;
+            exit when c_job%NOTFOUND;
+        end loop;
+        close c_job;
+        
+        
+        dbms_output.put_line('Angajatul cu cea mai mare vechime are ca job ' || job_nume);
+    
+    end angajati;
+    
+--8.
+
+    function tip_camera (oras_h hotel.oras%TYPE, 
+                                            luna number)
+    return varchar2 is camera1 camera.tip_camera%type;
+                        nume client.nume%TYPE;
+        
+            cod_h hotel.id_hotel%TYPE;
+            luna_invalida exception;
+        
+    begin
+    
+        if luna<1 or luna> 12 then
+            raise luna_invalida;
+        end if;
+    
+        select id_hotel into cod_h
+        from hotel
+        where upper(oras_h)=upper(oras);
+    
+        select c.tip_camera into camera1
+        from camera c 
+        join rezervare r on c.id_camera=r.id_camera
+        join client cc on cc.id_client=r.id_client
+        where extract (MONTH from r.data_rezervare)=luna and cc.nume like ('C%');
+        
+        dbms_output.put_line('Camera rezervata in luna ' || luna || ' la hotelul din ' || oras_h || ' este de tip: ');
+        return camera1;
+        
+        EXCEPTION
+        WHEN luna_invalida THEN
+            RAISE_APPLICATION_ERROR(-20999,'Luna introdusa este invalida!');
+        WHEN NO_DATA_FOUND THEN 
+            RAISE_APPLICATION_ERROR(-20999, 'In istoricul de rezervari nu exista nicio camera rezervata la hotelul din ' || oras_h || ' in luna ' || luna);
+        WHEN TOO_MANY_ROWS THEN 
+            RAISE_APPLICATION_ERROR(-20999,'Mai multe camere au fost rezervate la hotelul din ' || oras_h || ' in luna ' || luna);
+        
+    end tip_camera;
+    
+    
+--9.
+
+    procedure val_plata (cod_h hotel.id_hotel%TYPE,
+                                           zi number,
+                                           pret_s tip_sejur.pret%TYPE) as
+                                           
+            rezultat plata.valoare_plata%TYPE;
+            zi_invalida exception;
+    begin
+    
+        if zi<1 or zi>31 then
+            raise zi_invalida;
+        end if;
+        
+        select p.valoare_plata into rezultat
+        from plata p
+        join factura f on p.id_plata = f.id_plata
+        join rezervare r on r.id_factura=f.id_factura
+        join apartament a on a.id_apartament=r.id_apartament 
+        join tip_sejur t on r.id_sejur=t.id_sejur
+        where a.id_hotel=cod_h and a.numar_camere=3 and EXTRACT (DAY from r.check_in)=zi and t.pret>pret_s;
+                
+        dbms_output.put_line('Valoarea de plata cautata este ' || rezultat);
+        
+        exception
+        when zi_invalida then
+            RAISE_APPLICATION_ERROR(-20009, 'Ziua transmisa ca parametru este invalida!');
+        when NO_DATA_FOUND then
+                RAISE_APPLICATION_ERROR(-20009, 'Nu exista nicio rezervare cu aceste date!');
+        when TOO_MANY_ROWS then
+                RAISE_APPLICATION_ERROR(-20009, 'Exista mai multe rezervari cu aceste date!');
+        when others then
+                RAISE_APPLICATION_ERROR(-20009, 'Am intampinat o eroare');
+              
+    end val_plata;
+    
+end ex13_ege;
+
+
+begin
+    dbms_output.put_line('Exericitiul 6:');
+    ex13_ege.servicii_hotel('Constanta');
+    dbms_output.put_line(' ');
+    dbms_output.put_line('Exericitiul 7:');
+    ex13_ege.angajati('Tiberiu', 'Emil');
+    dbms_output.put_line(' ');
+    dbms_output.put_line('Exericitiul 8:');
+    dbms_output.put_line(ex13_ege.tip_camera('Constanta',3));
+    dbms_output.put_line(' ');
+    dbms_output.put_line('Exericitiul 9:');
+    ex13_ege.val_plata(5,1,50);
+    
+end;
+
+
