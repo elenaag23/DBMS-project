@@ -1,1 +1,1 @@
-# DBMS-project
+DBMS project about managing a hotel brand. I needed to implement different functions and procedures to show I am familiar with PL/SQL collections, cursors, join on multiple tables, managing errors, triggers and packages.
